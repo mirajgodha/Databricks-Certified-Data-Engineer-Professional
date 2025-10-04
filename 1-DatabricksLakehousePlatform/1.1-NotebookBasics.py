@@ -45,7 +45,7 @@ print("Hello World!")
 
 # COMMAND ----------
 
-print(full_name)
+print(name)
 
 # COMMAND ----------
 
@@ -70,4 +70,4 @@ display(files)
 
 # COMMAND ----------
 
-
+dbutils.fs.ls('/databricks-datasets/bikeSharing/data-001/')
