@@ -4,12 +4,14 @@
 
 -- COMMAND ----------
 
-USE CATALOG hive_metastore
+--USE CATALOG hive_metastore
 
 -- COMMAND ----------
 
 CREATE TABLE employees
-  (id INT, name STRING, salary DOUBLE);
+  (id INT, name STRING, salary DOUBLE)
+  USING DELTA
+LOCATION 's3://databricks-miraj/workspace/employees/';
 
 -- COMMAND ----------
 
@@ -69,7 +71,11 @@ DESCRIBE DETAIL employees
 
 -- COMMAND ----------
 
--- MAGIC %fs ls 'dbfs:/user/hive/warehouse/employees'
+DESCRIBE EXTENDED employees;
+
+-- COMMAND ----------
+
+DESCRIBE DETAIL workspace.default.employees;
 
 -- COMMAND ----------
 
@@ -114,7 +120,3 @@ DESCRIBE HISTORY employees
 -- COMMAND ----------
 
 -- MAGIC %fs head 'dbfs:/user/hive/warehouse/employees/_delta_log/00000000000000000005.json'
-
--- COMMAND ----------
-
-
