@@ -5,7 +5,7 @@
 
 -- COMMAND ----------
 
-USE CATALOG hive_metastore
+-- USE CATALOG hive_metastore
 
 -- COMMAND ----------
 
@@ -30,7 +30,7 @@ SELECT * FROM employees
 
 -- COMMAND ----------
 
-RESTORE TABLE employees TO VERSION AS OF 5
+RESTORE TABLE employees TO VERSION AS OF 8
 
 -- COMMAND ----------
 
@@ -75,6 +75,11 @@ DESCRIBE HISTORY employees
 
 -- COMMAND ----------
 
+-- MAGIC %md
+-- MAGIC ### This command will delete the unused `files`
+
+-- COMMAND ----------
+
 VACUUM employees
 
 -- COMMAND ----------
@@ -83,7 +88,19 @@ VACUUM employees
 
 -- COMMAND ----------
 
+-- MAGIC %md
+-- MAGIC ### Files still there
+-- MAGIC We still see the files as by default retantion period is 7 days, so it will only delete the files older than 7 days
+
+-- COMMAND ----------
+
 VACUUM employees RETAIN 0 HOURS
+
+-- COMMAND ----------
+
+-- MAGIC %md
+-- MAGIC ### This will also not work
+-- MAGIC So lets do a workaround for now, but it should not be done in production. However this setting will work in hive catalog. But in Databricks Runtime with Unity Catalog, that config is not exposed — it’s blocked.
 
 -- COMMAND ----------
 
