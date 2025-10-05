@@ -4,7 +4,7 @@
 
 -- COMMAND ----------
 
-USE CATALOG hive_metastore;
+--USE CATALOG hive_metastore;
 
 CREATE TABLE managed_default
   (width INT, length INT, height INT);
@@ -26,7 +26,8 @@ DESCRIBE EXTENDED managed_default
 
 CREATE TABLE external_default
   (width INT, length INT, height INT)
-LOCATION 'dbfs:/mnt/demo/external_default';
+USING DELTA
+LOCATION 's3://databricks-miraj/external/employees/';
   
 INSERT INTO external_default
 VALUES (3 INT, 2 INT, 1 INT)
