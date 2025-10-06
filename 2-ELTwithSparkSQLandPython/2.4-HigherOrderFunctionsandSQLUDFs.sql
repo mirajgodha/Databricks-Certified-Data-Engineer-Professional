@@ -16,6 +16,47 @@ SELECT * FROM orders
 -- COMMAND ----------
 
 -- MAGIC %md
+-- MAGIC ## ⚙️ Higher-Order Functions in Databricks SQL
+-- MAGIC
+-- MAGIC ---
+-- MAGIC
+-- MAGIC ## 🧠 Definition
+-- MAGIC Higher-order functions are **functions that operate on arrays or maps** and can **take other functions as arguments** or **return functions**.  
+-- MAGIC They allow you to perform transformations, filters, or aggregations on complex data types (like arrays) directly within SQL — **without exploding them.**
+-- MAGIC
+-- MAGIC In simple terms:
+-- MAGIC > A higher-order function lets you apply logic *inside* an array or map column, element by element.
+-- MAGIC
+-- MAGIC ---
+-- MAGIC
+-- MAGIC ## 💡 Common Higher-Order Functions
+-- MAGIC
+-- MAGIC | Function | Description | Example |
+-- MAGIC |-----------|--------------|----------|
+-- MAGIC | `transform()` | Applies a function to each element in an array | `transform(array(1,2,3), x -> x + 1)` → `[2,3,4]` |
+-- MAGIC | `filter()` | Keeps elements that satisfy a condition | `filter(array(1,2,3,4), x -> x % 2 = 0)` → `[2,4]` |
+-- MAGIC | `exists()` | Returns `true` if any element matches condition | `exists(array(1,2,3), x -> x = 2)` → `true` |
+-- MAGIC | `reduce()` | Aggregates array elements using an expression | `reduce(array(1,2,3), 0, (acc, x) -> acc + x)` → `6` |
+-- MAGIC | `aggregate()` | More general version of reduce with final transformation | `aggregate(array(1,2,3), 0, (acc, x) -> acc + x, acc -> acc * 10)` → `60` |
+-- MAGIC | `transform_keys()` | Transforms keys in a map | `transform_keys(map('a',1,'b',2), (k,v) -> upper(k))` → `{"A":1,"B":2}` |
+-- MAGIC | `transform_values()` | Transforms values in a map | `transform_values(map('a',1,'b',2), (k,v) -> v*2)` → `{"a":2,"b":4}` |
+-- MAGIC
+-- MAGIC ---
+-- MAGIC
+-- MAGIC ## 🧩 Example
+-- MAGIC
+-- MAGIC ```sql
+-- MAGIC -- Create sample data
+-- MAGIC SELECT array(10, 20, 30) AS numbers;
+-- MAGIC
+-- MAGIC -- Apply higher-order function
+-- MAGIC SELECT transform(numbers, x -> x / 10) AS divided
+-- MAGIC FROM (SELECT array(10, 20, 30) AS numbers);
+-- MAGIC
+
+-- COMMAND ----------
+
+-- MAGIC %md
 -- MAGIC
 -- MAGIC ## Filtering Arrays
 

@@ -17,7 +17,7 @@
 
 -- COMMAND ----------
 
-SELECT * FROM customers
+SELECT * FROM customers;
 
 -- COMMAND ----------
 
@@ -25,8 +25,19 @@ DESCRIBE customers
 
 -- COMMAND ----------
 
+-- MAGIC %md
+-- MAGIC ### Json string
+-- MAGIC Can you see the **profile** column in customers table is not a string , its **json** string.
+
+-- COMMAND ----------
+
 SELECT customer_id, profile:first_name, profile:address:country 
 FROM customers
+
+-- COMMAND ----------
+
+-- MAGIC %md
+-- MAGIC This will fail as **from_json** requires schema of our object
 
 -- COMMAND ----------
 
@@ -49,12 +60,29 @@ SELECT * FROM parsed_customers
 
 -- COMMAND ----------
 
+-- MAGIC %md
+-- MAGIC ### 🧱 What Is STRUCT in Databricks SQL
+-- MAGIC
+-- MAGIC **STRUCT** is a complex (nested) data type — it’s like a row within a row.
+-- MAGIC Think of it as a JSON object or a small record stored inside a column.
+-- MAGIC
+-- MAGIC _In SQL terms:_
+-- MAGIC
+-- MAGIC A **STRUCT** groups multiple fields together into a single column.
+
+-- COMMAND ----------
+
 DESCRIBE parsed_customers
 
 -- COMMAND ----------
 
 SELECT customer_id, profile_struct.first_name, profile_struct.address.country
 FROM parsed_customers
+
+-- COMMAND ----------
+
+-- MAGIC %md
+-- MAGIC **profile_struct.** will extract all the columns
 
 -- COMMAND ----------
 
@@ -76,6 +104,16 @@ FROM orders
 
 -- COMMAND ----------
 
+-- MAGIC %md
+-- MAGIC Here books column is of Array type:
+-- MAGIC ```
+-- MAGIC array
+-- MAGIC 0: {"book_id": "B07", "quantity": 1, "subtotal": 33}
+-- MAGIC 1: {"book_id": "B06", "quantity": 1, "subtotal": 22}
+-- MAGIC ```
+
+-- COMMAND ----------
+
 SELECT order_id, customer_id, explode(books) AS book 
 FROM orders
 
@@ -83,6 +121,11 @@ FROM orders
 
 -- MAGIC %md
 -- MAGIC ## Collecting Rows
+
+-- COMMAND ----------
+
+-- MAGIC %md
+-- MAGIC **collect_set** will collect unique values
 
 -- COMMAND ----------
 

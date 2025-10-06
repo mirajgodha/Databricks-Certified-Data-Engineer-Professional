@@ -248,13 +248,27 @@ class CourseDataset:
 
 # COMMAND ----------
 
-data_source_uri = "s3://dalhussein-courses/DE-Pro/datasets/bookstore/v1/"
-dataset_bookstore = 'dbfs:/mnt/demo-datasets/DE-Pro/bookstore'
-spark.conf.set(f"dataset.bookstore", dataset_bookstore)
-spark.conf.set("fs.s3a.endpoint", "s3.eu-west-3.amazonaws.com")
-spark.conf.set("fs.s3a.aws.credentials.provider", "org.apache.hadoop.fs.s3a.AnonymousAWSCredentialsProvider")
-checkpoint_path = "dbfs:/mnt/demo_pro/checkpoints"
-data_catalog = 'hive_metastore'
+# MAGIC %sql
+# MAGIC -- Create a catalog for this lab
+# MAGIC CREATE CATALOG IF NOT EXISTS bookstore;
+# MAGIC
+# MAGIC -- Use the catalog
+# MAGIC USE CATALOG bookstore;
+# MAGIC
+# MAGIC -- Create schemas for different business units
+# MAGIC CREATE SCHEMA IF NOT EXISTS bookstore_eng_pro;
+# MAGIC
+# MAGIC
+# MAGIC -- Set default schema
+# MAGIC USE bookstore.bookstore_eng_pro;
+
+# COMMAND ----------
+
+data_source_uri = "s3://databricks-miraj/bookstore/"
+dataset_bookstore = 's3://databricks-miraj/bookstore/'
+
+checkpoint_path = "s3://databricks-miraj/checkpoint/"
+data_catalog = 'bookstore'
 db_name = "bookstore_eng_pro"
 
 bookstore = CourseDataset(data_source_uri, dataset_bookstore, checkpoint_path, data_catalog, db_name)

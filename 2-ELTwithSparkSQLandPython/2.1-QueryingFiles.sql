@@ -22,25 +22,54 @@
 
 -- COMMAND ----------
 
-SELECT * FROM json.`${dataset.bookstore}/customers-json/export_001.json`
+-- MAGIC %python
+-- MAGIC
+-- MAGIC df = spark.read.json(f"{dataset_bookstore}/customers-json/export_001.json")
+-- MAGIC display(df)
+-- MAGIC
 
 -- COMMAND ----------
 
-SELECT * FROM json.`${dataset.bookstore}/customers-json/export_*.json`
+SELECT * FROM json.`s3://databricks-miraj/bookstore/customers-json/export_*.json`
 
 -- COMMAND ----------
 
-SELECT * FROM json.`${dataset.bookstore}/customers-json`
+SELECT * FROM json.`s3://databricks-miraj/bookstore/customers-json`
 
 -- COMMAND ----------
 
-SELECT count(*) FROM json.`${dataset.bookstore}/customers-json`
+SELECT count(*) FROM json.`s3://databricks-miraj/bookstore/customers-json`
+
+-- COMMAND ----------
+
+-- MAGIC %md
+-- MAGIC ## The _metadata Column
+-- MAGIC The input_file_name() function is no longer supported in newer versions of the Databricks Runtime. As an alternative, you can use the _metadata.file_path attribute to retrieve the file path information.
+-- MAGIC <br><br>
+-- MAGIC
+-- MAGIC ```
+-- MAGIC SELECT *,
+-- MAGIC        _metadata.file_path AS source_file
+-- MAGIC FROM json.`${dataset.bookstore}/customers-json`;
+-- MAGIC ```
+-- MAGIC
+-- MAGIC By leveraging the _metadata column, you can access various details about your input files, such as:
+-- MAGIC
+-- MAGIC **_metadata.file_path:** The full path to the input file.
+-- MAGIC
+-- MAGIC **_metadata.file_name:** The name of the file, including its extension.
+-- MAGIC
+-- MAGIC **_metadata.file_size:** The size of the file in bytes.
+-- MAGIC
+-- MAGIC **_metadata.file_modification_time:** The timestamp of the last modification made to the file.
+-- MAGIC
+-- MAGIC
 
 -- COMMAND ----------
 
  SELECT *,
-    input_file_name() source_file
-  FROM json.`${dataset.bookstore}/customers-json`;
+    _metadata.file_path AS source_file
+  FROM json.`s3://databricks-miraj/bookstore/customers-json`;
 
 -- COMMAND ----------
 
@@ -49,7 +78,7 @@ SELECT count(*) FROM json.`${dataset.bookstore}/customers-json`
 
 -- COMMAND ----------
 
-SELECT * FROM text.`${dataset.bookstore}/customers-json`
+SELECT * FROM text.`s3://databricks-miraj/bookstore/customers-json`
 
 -- COMMAND ----------
 
@@ -58,17 +87,13 @@ SELECT * FROM text.`${dataset.bookstore}/customers-json`
 
 -- COMMAND ----------
 
-SELECT * FROM binaryFile.`${dataset.bookstore}/customers-json`
+SELECT * FROM binaryFile.`s3://databricks-miraj/bookstore/customers-json`
 
 -- COMMAND ----------
 
 -- MAGIC %md
 -- MAGIC
 -- MAGIC ## Querying CSV 
-
--- COMMAND ----------
-
-SELECT * FROM csv.`${dataset.bookstore}/books-csv`
 
 -- COMMAND ----------
 
@@ -79,11 +104,52 @@ OPTIONS (
   header = "true",
   delimiter = ";"
 )
-LOCATION "${dataset.bookstore}/books-csv"
+LOCATION "s3://databricks-miraj/bookstore/books-csv"
 
 -- COMMAND ----------
 
 SELECT * FROM books_csv
+
+-- COMMAND ----------
+
+-- MAGIC %md
+-- MAGIC ## Simplified File Querying
+-- MAGIC Databricks recently introduced a new function called read_files that makes it easier to query CSV files and other file formats directly, without needing to first create a temporary view.
+-- MAGIC
+-- MAGIC Example: Querying CSV Files
+-- MAGIC
+-- MAGIC ```
+-- MAGIC SELECT * FROM read_files(
+-- MAGIC   '${dataset_bookstore}/books-csv/export_*.csv',
+-- MAGIC   format => 'csv',
+-- MAGIC   header => 'true',
+-- MAGIC   delimiter => ';'
+-- MAGIC );
+-- MAGIC
+-- MAGIC ````
+-- MAGIC
+-- MAGIC Now, we can create our books delta table directly from these files using a CTAS statement:
+-- MAGIC
+-- MAGIC ```
+-- MAGIC CREATE TABLE books
+-- MAGIC AS SELECT * FROM read_files(
+-- MAGIC     '${dataset_bookstore}/books-csv/export_*.csv',
+-- MAGIC     format => 'csv',
+-- MAGIC     header => 'true',
+-- MAGIC     delimiter => ';'
+-- MAGIC );
+-- MAGIC ```
+-- MAGIC The read_files function automatically tries to infer a unified schema from all the source files. If any value doesn’t match the expected schema, it's stored in an extra column called _rescued_data as a JSON string.
+
+-- COMMAND ----------
+
+SELECT * FROM read_files(
+  's3://databricks-miraj/bookstore/books-csv/export_*.csv',
+  format => 'csv',
+  header => 'true',
+  delimiter => ';'
+);
+
 
 -- COMMAND ----------
 
@@ -139,14 +205,14 @@ SELECT COUNT(*) FROM books_csv
 -- COMMAND ----------
 
 CREATE TABLE customers AS
-SELECT * FROM json.`${dataset.bookstore}/customers-json`;
+SELECT * FROM json.`s3://databricks-miraj/bookstore/customers-json`;
 
 DESCRIBE EXTENDED customers;
 
 -- COMMAND ----------
 
 CREATE TABLE books_unparsed AS
-SELECT * FROM csv.`${dataset.bookstore}/books-csv`;
+SELECT * FROM csv.`s3://databricks-miraj/bookstore//books-csv`;
 
 SELECT * FROM books_unparsed;
 
