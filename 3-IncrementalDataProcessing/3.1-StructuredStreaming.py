@@ -30,8 +30,10 @@
 
 # COMMAND ----------
 
-# MAGIC %sql
-# MAGIC SELECT * FROM books_streaming_tmp_vw
+display(
+  spark.table("books_streaming_tmp_vw"),
+  checkpointLocation="s3://databricks-miraj/checkpoint/"
+)
 
 # COMMAND ----------
 
@@ -40,10 +42,14 @@
 
 # COMMAND ----------
 
-# MAGIC %sql
-# MAGIC SELECT author, count(book_id) AS total_books
-# MAGIC FROM books_streaming_tmp_vw
-# MAGIC GROUP BY author
+display(
+  spark.sql("""
+    SELECT author, count(book_id) AS total_books
+    FROM books_streaming_tmp_vw
+    GROUP BY author
+  """),
+  checkpointLocation="s3://databricks-miraj/checkpoint1/"
+)
 
 # COMMAND ----------
 
@@ -53,10 +59,13 @@
 
 # COMMAND ----------
 
-# MAGIC %sql
-# MAGIC  SELECT * 
-# MAGIC  FROM books_streaming_tmp_vw
-# MAGIC  ORDER BY author
+display(
+  spark.sql("""
+ SELECT * 
+ FROM books_streaming_tmp_vw
+ ORDER BY author"""),
+  checkpointLocation="s3://databricks-miraj/checkpoint1/"
+)
 
 # COMMAND ----------
 
@@ -72,6 +81,7 @@
 # MAGIC   FROM books_streaming_tmp_vw
 # MAGIC   GROUP BY author
 # MAGIC )
+# MAGIC
 
 # COMMAND ----------
 
@@ -79,7 +89,7 @@
       .writeStream  
       .trigger(processingTime='4 seconds')
       .outputMode("complete")
-      .option("checkpointLocation", "dbfs:/mnt/demo/author_counts_checkpoint")
+      .option("checkpointLocation", "s3://databricks-miraj/checkpoint3/")
       .table("author_counts")
 )
 
