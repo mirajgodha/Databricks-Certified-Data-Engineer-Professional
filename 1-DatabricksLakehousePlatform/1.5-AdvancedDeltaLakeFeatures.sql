@@ -134,4 +134,9 @@ SELECT * FROM employees
 
 -- COMMAND ----------
 
+-- MAGIC %md
+-- MAGIC External table files are not deleted
+
+-- COMMAND ----------
+
 -- MAGIC %fs ls 'dbfs:/user/hive/warehouse/employees'

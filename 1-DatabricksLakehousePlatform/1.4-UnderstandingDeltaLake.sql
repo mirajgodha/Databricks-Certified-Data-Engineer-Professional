@@ -8,6 +8,10 @@
 
 -- COMMAND ----------
 
+drop table employees;
+
+-- COMMAND ----------
+
 CREATE TABLE employees
   (id INT, name STRING, salary DOUBLE)
   USING DELTA
@@ -89,7 +93,7 @@ DESCRIBE DETAIL workspace.default.employees;
 
 UPDATE employees 
 SET salary = salary + 100
-WHERE name LIKE "A%"
+WHERE name LIKE "%Kim%"
 
 -- COMMAND ----------
 
@@ -131,7 +135,8 @@ describe history employees;
 -- COMMAND ----------
 
 -- MAGIC %md
--- MAGIC ## Check the updated file
+-- MAGIC ## When you run update command 
+-- MAGIC ###Check the updated file
 -- MAGIC - Remove the old file (no DV).
 -- MAGIC - Re-add the old file, but with DV applied (marking Sarah’s old row as deleted).
 -- MAGIC - Add a tiny new file containing Sarah’s updated row.
@@ -142,7 +147,7 @@ describe history employees;
 -- MAGIC - 1 add (same file, but with a deletion vector).
 -- MAGIC - 1 add (the new row file).
 -- MAGIC
--- MAGIC That’s why you see “2 files removed” — but really, it’s Delta’s internal bookkeeping for immutability + DVs.
+-- MAGIC That’s why you see “2 files removed” — but really, it’s Delta’s internal bookkeeping for immutability + DVs.un 
 
 -- COMMAND ----------
 
