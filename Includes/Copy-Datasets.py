@@ -266,14 +266,17 @@ class CourseDataset:
 
 data_source_uri = "s3://dalhussein-courses/datasets/bookstore/v1/"
 
+# In serverless mode where dbfs is not available, replace the path with your external location path
 dataset_bookstore = 'dbfs:/databricks-miraj/bookstore/'
 # dataset_bookstore = 's3://databricks-miraj/bookstore/'
 
 # comment it if running in a serverless notebook
 spark.conf.set(f"dataset.bookstore", dataset_bookstore)
 
+# In serverless mode where dbfs is not available, replace the path with your external location path
 checkpoint_path = "dbfs:/databricks-miraj/checkpoint/"
 # checkpoint_path = 's3://databricks-miraj/checkpoint/'
+
 data_catalog = 'bookstore'
 db_name = "bookstore_eng_pro"
 

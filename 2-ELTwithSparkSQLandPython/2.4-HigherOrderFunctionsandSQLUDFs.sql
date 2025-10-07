@@ -102,6 +102,69 @@ FROM orders;
 
 -- COMMAND ----------
 
+-- MAGIC %md
+-- MAGIC ## What is a UDF in Databricks?
+-- MAGIC
+-- MAGIC A **User-Defined Function (UDF)** in Databricks is a custom function created by users to extend the built-in functionality of Apache Spark SQL or the Spark API. UDFs allow you to define specific logic that may not be readily supported with the native Spark functions.
+-- MAGIC
+-- MAGIC ### Key Points about UDFs:
+-- MAGIC
+-- MAGIC - **Purpose:**
+-- MAGIC Perform complex calculations, transformations, or data manipulations that are difficult or impossible with built-in Spark functions.
+-- MAGIC - **Languages Supported:**
+-- MAGIC You can write UDFs in **Python, Scala, Java, and R**.
+-- MAGIC - **Use Cases:**
+-- MAGIC     - Data encryption/decryption
+-- MAGIC     - Hashing
+-- MAGIC     - JSON parsing
+-- MAGIC     - Custom validation logic
+-- MAGIC     - Business-specific calculations
+-- MAGIC - **Performance Note:**
+-- MAGIC Built-in Spark functions are usually faster and optimized for distributed processing. Use UDFs primarily when no built-in function meets your requirement.
+-- MAGIC - **Scope:**
+-- MAGIC UDFs can be temporary (session-scoped) or registered persistently for reuse.
+-- MAGIC
+-- MAGIC
+-- MAGIC ### Example: Defining a Python UDF in Databricks
+-- MAGIC
+-- MAGIC ```python
+-- MAGIC from pyspark.sql.functions import udf
+-- MAGIC from pyspark.sql.types import StringType
+-- MAGIC
+-- MAGIC # Define a python function
+-- MAGIC def capitalize_first_letter(s):
+-- MAGIC     if s:
+-- MAGIC         return s.capitalize()
+-- MAGIC     else:
+-- MAGIC         return None
+-- MAGIC
+-- MAGIC # Register the function as a Spark UDF
+-- MAGIC capitalize_udf = udf(capitalize_first_letter, StringType())
+-- MAGIC
+-- MAGIC # Use in DataFrame operations
+-- MAGIC df = spark.createDataFrame([("alice",), ("bob",), (None,)], ["name"])
+-- MAGIC df.withColumn("capitalized_name", capitalize_udf("name")).show()
+-- MAGIC ```
+-- MAGIC
+-- MAGIC
+-- MAGIC ### SQL UDFs in Databricks SQL
+-- MAGIC
+-- MAGIC Databricks also supports **SQL UDFs**, which are functions written purely in SQL for reuse and better integration with SQL workflows. They are easier for SQL users and optimize well with the query optimizer.
+-- MAGIC
+-- MAGIC ***
+-- MAGIC
+-- MAGIC ### References
+-- MAGIC
+-- MAGIC - [Databricks What are User-Defined Functions (UDFs)?](https://docs.databricks.com/aws/en/udf/)
+-- MAGIC - [Databricks SQL User-Defined Functions](https://www.databricks.com/blog/2021/10/20/introducing-sql-user-defined-functions.html)
+-- MAGIC - [Azure Databricks UDF Documentation](https://learn.microsoft.com/en-us/azure/databricks/udf/)
+-- MAGIC
+-- MAGIC UDFs offer great flexibility for custom processing in Spark workloads when built-in functions don’t suffice.
+-- MAGIC
+-- MAGIC
+
+-- COMMAND ----------
+
 CREATE OR REPLACE FUNCTION get_url(email STRING)
 RETURNS STRING
 
