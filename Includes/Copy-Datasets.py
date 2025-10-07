@@ -264,10 +264,16 @@ class CourseDataset:
 
 # COMMAND ----------
 
-data_source_uri = "s3://databricks-miraj/bookstore/"
-dataset_bookstore = 's3://databricks-miraj/bookstore/'
+data_source_uri = "s3://dalhussein-courses/datasets/bookstore/v1/"
 
-checkpoint_path = "s3://databricks-miraj/checkpoint/"
+dataset_bookstore = 'dbfs:/databricks-miraj/bookstore/'
+# dataset_bookstore = 's3://databricks-miraj/bookstore/'
+
+# comment it if running in a serverless notebook
+spark.conf.set(f"dataset.bookstore", dataset_bookstore)
+
+checkpoint_path = "dbfs:/databricks-miraj/checkpoint/"
+# checkpoint_path = 's3://databricks-miraj/checkpoint/'
 data_catalog = 'bookstore'
 db_name = "bookstore_eng_pro"
 
