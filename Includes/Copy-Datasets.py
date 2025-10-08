@@ -53,44 +53,48 @@ class CourseDataset:
         print("Done")
 
     
-    def __get_index(self, dir):
+    def __get_index(self, dir, type="json"):
         try:
             files = dbutils.fs.ls(dir)
-            file = max(f.name for f in files if f.name.endswith('.json'))
+            file = max(f.name for f in files if f.name.endswith(f'.{type}'))
             index = int(file.rsplit('.', maxsplit=1)[0])
         except:
             index = 0
         return index+1
     
-    
-    def __load_json_file(self, current_index, streaming_dir, raw_dir):
-        latest_file = f"{str(current_index).zfill(2)}.json"
+
+    def __load_json_file(self, current_index, streaming_dir, raw_dir, type="json"):
+        latest_file = f"{str(current_index).zfill(2)}.{type}"
         source = f"{streaming_dir}/{latest_file}"
         target = f"{raw_dir}/{latest_file}"
         prefix = streaming_dir.split("/")[-1]
         if path_exists(source):
             print(f"Loading {prefix}-{latest_file} file to the bookstore dataset")
+            print(f"From: {source}, To: {target}")
             dbutils.fs.cp(source, target)
+        else:
+            print(f"File {source} & {latest_file} does not exist")
     
     
-    def __load_data(self, max, streaming_dir, raw_dir, all=False):
-        index = self.__get_index(raw_dir)
+    def __load_data(self, max, streaming_dir, raw_dir, type="json", all=False):
+        index = self.__get_index(raw_dir, type)
         if index > max:
             print("No more data to load\n")
 
         elif all == True:
             while index <= max:
-                self.__load_json_file(index, streaming_dir, raw_dir)
+                self.__load_json_file(index, streaming_dir, raw_dir, type)
                 index += 1
         else:
-            self.__load_json_file(index, streaming_dir, raw_dir)
+            self.__load_json_file(index, streaming_dir, raw_dir, type)
             index += 1
     
-    def load_new_data(self, num_files = 1):
-        streaming_dir = f"{self.location}/kafka-streaming"
-        raw_dir = f"{self.location}/kafka-raw"
+    def load_new_data(self, table="kafka", type="json", num_files = 1):
+        streaming_dir = f"{self.location}/{table}-streaming"
+        raw_dir = f"{self.location}/{table}-raw"
+        print(f"Loading {num_files} new files ...From: {streaming_dir}, To: {raw_dir}")
         for i in range(num_files):
-            self.__load_data(10, streaming_dir, raw_dir)
+            self.__load_data(10, streaming_dir, raw_dir, type)
         
     
     def load_books_updates(self):
@@ -266,8 +270,11 @@ class CourseDataset:
 
 data_source_uri = "s3://dalhussein-courses/datasets/bookstore/v1/"
 
+#Use this one for getting the kafka data
+#data_source_uri = "s3://dalhussein-courses/DE-Pro/datasets/bookstore/v1/"
+
 # In serverless mode where dbfs is not available, replace the path with your external location path
-dataset_bookstore = 'dbfs:/databricks-miraj/bookstore/'
+dataset_bookstore = 'dbfs:/databricks-miraj/bookstore'
 # dataset_bookstore = 's3://databricks-miraj/bookstore/'
 
 # comment it if running in a serverless notebook

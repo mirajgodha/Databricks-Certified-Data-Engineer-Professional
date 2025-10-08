@@ -75,7 +75,16 @@ display(files)
 
 # COMMAND ----------
 
-load_new_data()
+bookstore.load_new_data(table="orders", type= "parquet")
+
+# COMMAND ----------
+
+dbutils.fs.ls("dbfs:/databricks-miraj/bookstore/orders-streaming/")
+
+
+# COMMAND ----------
+
+dbutils.fs.ls("dbfs:/databricks-miraj/bookstore/orders-raw")
 
 # COMMAND ----------
 
@@ -138,7 +147,7 @@ load_new_data()
 
 # COMMAND ----------
 
-load_new_data()
+bookstore.load_new_data(table="orders", type= "parquet")
 
 # COMMAND ----------
 
@@ -177,7 +186,7 @@ load_new_data()
 
 # COMMAND ----------
 
-load_new_data()
+bookstore.load_new_data(table="orders", type= "parquet")
 
 # COMMAND ----------
 

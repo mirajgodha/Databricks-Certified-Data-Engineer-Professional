@@ -45,6 +45,11 @@
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC Better to apply constraints in the pipeline
+
+# COMMAND ----------
+
 from pyspark.sql import functions as F
 
 json_schema = "order_id STRING, order_timestamp Timestamp, customer_id STRING, quantity BIGINT, total BIGINT, books ARRAY<STRUCT<book_id STRING, quantity BIGINT, subtotal BIGINT>>"
