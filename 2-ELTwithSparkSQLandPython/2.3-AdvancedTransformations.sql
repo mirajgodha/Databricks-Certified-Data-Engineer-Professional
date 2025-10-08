@@ -37,7 +37,7 @@ FROM customers
 -- COMMAND ----------
 
 -- MAGIC %md
--- MAGIC This will fail as **from_json** requires schema of our object
+-- MAGIC This will **fail** as **from_json** requires _schema_ of our object
 
 -- COMMAND ----------
 

@@ -17,7 +17,7 @@
 -- COMMAND ----------
 
 -- MAGIC %python
--- MAGIC files = dbutils.fs.ls(f"{dataset_bookstore}/customers-json")
+-- MAGIC files = dbutils.fs.ls("s3://databricks-miraj/bookstore/customers-json")
 -- MAGIC display(files)
 
 -- COMMAND ----------
@@ -113,8 +113,8 @@ SELECT * FROM books_csv
 -- COMMAND ----------
 
 -- MAGIC %md
--- MAGIC ## Simplified File Querying
--- MAGIC Databricks recently introduced a new function called read_files that makes it easier to query CSV files and other file formats directly, without needing to first create a temporary view.
+-- MAGIC ## Simplified File Querying - read_files
+-- MAGIC Databricks recently introduced a new function called **read_files** that makes it easier to query CSV files and other file formats directly, without needing to first create a temporary view.
 -- MAGIC
 -- MAGIC Example: Querying CSV Files
 -- MAGIC
