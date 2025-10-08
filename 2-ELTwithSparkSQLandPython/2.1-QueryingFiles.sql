@@ -191,6 +191,69 @@ SELECT COUNT(*) FROM books_csv
 
 -- COMMAND ----------
 
+-- MAGIC %md
+-- MAGIC ### REFRESH TABLE <table_name> — What It Does
+-- MAGIC
+-- MAGIC The REFRESH TABLE command tells Databricks (and underlying Spark) to invalidate and reload the metadata cache for a table.
+-- MAGIC
+-- MAGIC _In simple terms:_
+-- MAGIC
+-- MAGIC It makes Databricks “re-check” the underlying data files and schema from storage (S3, ADLS, etc.) instead of relying on old cached metadata.
+-- MAGIC
+-- MAGIC **⚙️ Why It’s Needed**
+-- MAGIC
+-- MAGIC When you read from a table — especially external tables or views —
+-- MAGIC Spark often caches metadata (like file listings, schema info, partition structure) to speed up queries.
+-- MAGIC
+-- MAGIC If new files are added, old ones deleted, or schema changes happen outside Databricks (e.g., another process writes new data directly to S3),
+-- MAGIC then Databricks may still show stale data until you refresh.
+-- MAGIC
+-- MAGIC That’s where this helps:
+-- MAGIC
+-- MAGIC ```
+-- MAGIC sql
+-- MAGIC REFRESH TABLE books_csv;
+-- MAGIC ```
+-- MAGIC
+-- MAGIC **It forces Spark to:**
+-- MAGIC
+-- MAGIC Clear its metadata cache for that table
+-- MAGIC
+-- MAGIC Rescan the underlying directory or Delta transaction log
+-- MAGIC
+-- MAGIC Load any newly added files or updates
+-- MAGIC
+-- MAGIC **🧩 Typical Scenarios Where You Use It**
+-- MAGIC
+-- MAGIC External tables (e.g., CSV, Parquet)
+-- MAGIC → If you manually add or remove files in the S3/ADLS path.
+-- MAGIC Example:
+-- MAGIC
+-- MAGIC ```
+-- MAGIC sql
+-- MAGIC REFRESH TABLE books_csv;
+-- MAGIC SELECT COUNT(*) FROM books_csv;
+-- MAGIC ```
+-- MAGIC
+-- MAGIC _Delta tables modified outside Databricks_
+-- MAGIC → e.g., another Spark job or AWS Glue job updated the Delta log.
+-- MAGIC
+-- MAGIC _When schema or partitions change_
+-- MAGIC → e.g., new partitions are added but Spark hasn’t noticed them yet.
+-- MAGIC
+-- MAGIC _When working with temporary views_
+-- MAGIC → REFRESH TABLE ensures that the view points to the latest underlying data.
+-- MAGIC
+-- MAGIC **🔍 What It Doesn’t Do**
+-- MAGIC
+-- MAGIC - It does not reload the data into memory cache (CACHE TABLE / UNCACHE TABLE handle that).
+-- MAGIC - 
+-- MAGIC - It does not re-optimize or rebuild statistics.
+-- MAGIC - 
+-- MAGIC - It simply refreshes metadata — file listings, partitions, schema.
+
+-- COMMAND ----------
+
 REFRESH TABLE books_csv
 
 -- COMMAND ----------
