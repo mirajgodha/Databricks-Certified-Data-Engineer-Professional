@@ -7,6 +7,33 @@
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC Run the below lines only if you are running the notebook for the first time. 
+# MAGIC
+# MAGIC These are clean up code lines
+
+# COMMAND ----------
+
+dbutils.fs.rm("dbfs:/databricks-miraj/bookstore/orders-raw/02.parquet")
+dbutils.fs.rm("dbfs:/mnt/demo/checkpoints/orders_raw", recurse=True)
+dbutils.fs.rm("dbfs:/mnt/demo/checkpoints/orders_bronze", recurse=True)
+dbutils.fs.rm("dbfs:/mnt/demo/checkpoints/orders_silver", recurse=True)
+dbutils.fs.rm("dbfs:/mnt/demo/checkpoints/daily_customer_books", recurse=True)
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC drop table orders_bronze;
+# MAGIC drop table orders_silver;
+# MAGIC drop table daily_customer_books;
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC
+
+# COMMAND ----------
+
 # MAGIC %run ../Includes/Copy-Datasets
 
 # COMMAND ----------
@@ -52,7 +79,7 @@ display(files)
 # COMMAND ----------
 
 # MAGIC %sql
-# MAGIC SELECT * FROM orders_tmp
+# MAGIC SELECT * FROM orders_tmp limit 10
 
 # COMMAND ----------
 
@@ -71,11 +98,17 @@ display(files)
 # COMMAND ----------
 
 # MAGIC %sql
-# MAGIC SELECT count(*) FROM orders_bronze
+# MAGIC SELECT * FROM orders_bronze 
+# MAGIC ORDER BY arrival_time desc limit 10
 
 # COMMAND ----------
 
 bookstore.load_new_data(table="orders", type= "parquet")
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC #### This is the directory from where the files are getting copired to teh books_raw folder
 
 # COMMAND ----------
 
@@ -84,7 +117,13 @@ dbutils.fs.ls("dbfs:/databricks-miraj/bookstore/orders-streaming/")
 
 # COMMAND ----------
 
+# can you see the two parquet files are there in our raw foder, that is the landing zone.
 dbutils.fs.ls("dbfs:/databricks-miraj/bookstore/orders-raw")
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ## Creating Silver Table
 
 # COMMAND ----------
 
@@ -103,11 +142,6 @@ dbutils.fs.ls("dbfs:/databricks-miraj/bookstore/orders-raw")
 
 # MAGIC %sql
 # MAGIC SELECT * FROM customers_lookup
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC ## Creating Silver Table
 
 # COMMAND ----------
 
@@ -183,6 +217,7 @@ bookstore.load_new_data(table="orders", type= "parquet")
 
 # MAGIC %sql
 # MAGIC SELECT * FROM daily_customer_books
+# MAGIC ORDER BY books_counts DESC, order_date DESC
 
 # COMMAND ----------
 

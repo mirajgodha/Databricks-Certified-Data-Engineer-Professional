@@ -17,6 +17,13 @@
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC Clean up the older runs, if any
+# MAGIC
+# MAGIC **Do not run the below lines if you are running this notebook for the first time.**
+
+# COMMAND ----------
+
 dbutils.fs.rm("dbfs:/databricks-miraj/bookstore/orders-raw/02.parquet")
 dbutils.fs.rm("dbfs:/mnt/demo/orders_checkpoint/", recurse=True)
 
@@ -24,6 +31,12 @@ dbutils.fs.rm("dbfs:/mnt/demo/orders_checkpoint/", recurse=True)
 
 # MAGIC %sql
 # MAGIC delete from orders_updates;
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ### Base folder is orders-raw 
+# MAGIC We will be creating auto loder stream on this folder and any new files copied here will be auto populated in our table orders_updated.
 
 # COMMAND ----------
 

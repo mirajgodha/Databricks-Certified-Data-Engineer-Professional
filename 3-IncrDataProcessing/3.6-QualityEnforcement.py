@@ -46,7 +46,7 @@
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC Better to apply constraints in the pipeline
+# MAGIC **Better to apply constraints in the pipeline**
 
 # COMMAND ----------
 
