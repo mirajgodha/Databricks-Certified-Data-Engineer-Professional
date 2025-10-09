@@ -1,0 +1,47 @@
+flowchart TD
+
+%% ===== RAW / LANDING LAYER =====
+A["Raw Source Files - Parquet in dbfs:/databricks-miraj/bookstore/orders-raw"] -->|"Auto Loader using cloudFiles.format='parquet'"| B["Temp View: orders_raw_temp"]
+
+B -->|"SQL transformation - add arrival_time and source_file"| C["Temp View: orders_tmp"]
+
+%% ===== BRONZE LAYER =====
+C -->|"WriteStream to Delta"| D["Delta Table: orders_bronze"]
+D --> E["Temp View: orders_bronze_tmp"]
+
+%% ===== LOOKUP =====
+F["Static Lookup: customers_lookup JSON"] -->|"Join on customer_id"| E
+
+%% ===== SILVER LAYER =====
+E -->|"SQL join and filtering where quantity is greater than zero"| G["Temp View: orders_enriched_tmp"]
+G -->|"WriteStream to Delta"| H["Delta Table: orders_silver"]
+H --> I["Temp View: orders_silver_tmp"]
+
+%% ===== GOLD LAYER =====
+I -->|"Aggregation - sum(quantity) grouped by customer and date"| J["Temp View: daily_customer_books_tmp"]
+J -->|"WriteStream in complete mode"| K["Delta Table: daily_customer_books"]
+
+%% ===== OUTPUT / ANALYSIS =====
+K --> L["SQL queries or dashboards - select from daily_customer_books"]
+
+%% ===== CHECKPOINTS =====
+subgraph Checkpoints
+  CB1["Checkpoint: /mnt/demo/checkpoints/orders_raw"]
+  CB2["Checkpoint: /mnt/demo/checkpoints/orders_bronze"]
+  CB3["Checkpoint: /mnt/demo/checkpoints/orders_silver"]
+  CB4["Checkpoint: /mnt/demo/checkpoints/daily_customer_books"]
+end
+
+B -.-> CB1
+D -.-> CB2
+H -.-> CB3
+K -.-> CB4
+
+%% ===== LAYER STYLING =====
+style A fill:#ffefcc,stroke:#f9a602,stroke-width:2px
+style D fill:#fff0b3,stroke:#f7c948
+style H fill:#d4edda,stroke:#28a745
+style K fill:#cce5ff,stroke:#007bff
+style F fill:#fbeaea,stroke:#dc3545
+style L fill:#e2e3e5,stroke:#6c757d
+style Checkpoints fill:#fdf2e9,stroke:#d39e00
