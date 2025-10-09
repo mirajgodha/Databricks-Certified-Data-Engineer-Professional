@@ -235,3 +235,10 @@ for s in spark.streams.active:
     print("Stopping stream: " + s.id)
     s.stop()
     s.awaitTermination()
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC <div  style="text-align: center; line-height: 0; padding-top: 9px;">
+# MAGIC   <img src="https://raw.githubusercontent.com/mirajgodha/Databricks-Certified-Data-Engineer-Professional/main/Includes/images/Medallion-Architecture-Flow.png" alt="Flow Diagram" style="width: 600">
+# MAGIC </div>
