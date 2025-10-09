@@ -110,7 +110,7 @@ display(
     FROM books_streaming_tmp_vw
     GROUP BY author
   """),
-  checkpointLocation="s3://databricks-miraj/checkpoint1/"
+  checkpointLocation="s3://databricks-miraj/checkpoint/"
 )
 
 # COMMAND ----------

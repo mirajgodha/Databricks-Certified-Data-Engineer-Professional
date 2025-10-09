@@ -17,6 +17,16 @@
 
 # COMMAND ----------
 
+dbutils.fs.rm("dbfs:/databricks-miraj/bookstore/orders-raw/02.parquet")
+dbutils.fs.rm("dbfs:/mnt/demo/orders_checkpoint/", recurse=True)
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC delete from orders_updates;
+
+# COMMAND ----------
+
 files = dbutils.fs.ls(f"{dataset_bookstore}/orders-raw")
 display(files)
 
@@ -142,7 +152,7 @@ display(files)
 # COMMAND ----------
 
 # MAGIC %sql
-# MAGIC SELECT count(*) FROM orders_updates
+# MAGIC SELECT * FROM orders_updates
 
 # COMMAND ----------
 
@@ -152,7 +162,7 @@ display(files)
 
 # COMMAND ----------
 
-load_new_data()
+bookstore.load_new_data(table="orders", type="parquet")
 
 # COMMAND ----------
 
@@ -180,6 +190,33 @@ display(files)
 # MAGIC %md
 # MAGIC
 # MAGIC ## Cleaning Up
+
+# COMMAND ----------
+
+# List all active Structured Streaming queries
+active_streams = spark.streams.active
+
+if len(active_streams) == 0:
+    print("✅ No active streaming queries found.")
+else:
+    print(f"⚙️ {len(active_streams)} active streaming queries detected:\n")
+
+    for stream in active_streams:
+        print(f"🔹 Name: {stream.name}")
+        print(f"   ID: {stream.id}")
+        print(f"   Is Active: {stream.isActive}")
+        print(f"   Status: {stream.status['message']}")
+        print(f"   Last Progress: {stream.lastProgress['batchId'] if stream.lastProgress else 'N/A'}")
+        print("-" * 60)
+
+    # Optionally stop all running streams
+    print("\n🛑 Stopping all active streaming queries...")
+    for stream in active_streams:
+        stream.stop()
+        print(f"   ⏹️ Stopped stream: {stream.name} (ID: {stream.id})")
+
+    print("\n✅ All active streams have been stopped.")
+
 
 # COMMAND ----------
 
