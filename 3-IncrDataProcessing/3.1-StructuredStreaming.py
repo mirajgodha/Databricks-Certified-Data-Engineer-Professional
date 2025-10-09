@@ -17,6 +17,69 @@
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC ## Read Stream
+# MAGIC <br><br>
+# MAGIC ```
+# MAGIC  spark.readStream
+# MAGIC
+# MAGIC       .table("books")
+# MAGIC       .createOrReplaceTempView("books_streaming_tmp_vw")
+# MAGIC     )
+# MAGIC ```
+# MAGIC
+# MAGIC This code creates a temporary view from a streaming DataFrame, allowing SQL queries on continuously arriving data from the "books" table.
+# MAGIC
+# MAGIC ### Step-by-Step Explanation
+# MAGIC
+# MAGIC - `(spark.readStream.table("books"))`: Reads the "books" table as a **structured streaming source**. This means the DataFrame will update continuously as new data is added to the table.[^1][^3][^8]
+# MAGIC - `.createOrReplaceTempView("books_streaming_tmp_vw")`: Registers the streaming DataFrame as a **temporary view** named "books_streaming_tmp_vw". This lets you query the latest records using Databricks SQL statements such as `SELECT * FROM books_streaming_tmp_vw`.
+# MAGIC
+# MAGIC
+# MAGIC ### Key Concepts
+# MAGIC
+# MAGIC - **Structured Streaming**: Spark's API for working with real-time streams of data, incrementally processing new records as they arrive.
+# MAGIC - **Delta Table Streaming**: In Databricks, you can stream changes from Delta tables; new rows added to the "books" table become part of the DataFrame automatically.
+# MAGIC - **Temporary View**: A view defined in a Spark session that can be queried using SQL, including continuous queries on incoming streaming data.
+# MAGIC
+# MAGIC
+# MAGIC ### Typical Use Case
+# MAGIC
+# MAGIC - After executing this code, SQL queries like `SELECT title, author FROM books_streaming_tmp_vw WHERE price > 100;` will always operate on up-to-date, streaming data.
+# MAGIC
+# MAGIC
+# MAGIC ### Summary Table
+# MAGIC
+# MAGIC | Step | Purpose |
+# MAGIC | :-- | :-- |
+# MAGIC | `.readStream.table("books")` | Create a streaming DataFrame from "books" |
+# MAGIC | `.createOrReplaceTempView(...)` | Make it queryable as a temp SQL view |
+# MAGIC
+# MAGIC This is a common pattern for combining Spark Structured Streaming with SQL-based analytics on real-time data in Databricks.[^3][^8][^1]
+# MAGIC <span style="display:none">[^2][^4][^5][^6][^7]</span>
+# MAGIC
+# MAGIC <div align="center">⁂</div>
+# MAGIC
+# MAGIC [^1]: https://docs.databricks.com/aws/en/structured-streaming/delta-lake
+# MAGIC
+# MAGIC [^2]: https://spark.apache.org/docs/3.5.1/structured-streaming-programming-guide.html
+# MAGIC
+# MAGIC [^3]: https://learn.microsoft.com/en-us/azure/databricks/structured-streaming/delta-lake
+# MAGIC
+# MAGIC [^4]: https://spark.apache.org/docs/latest/structured-streaming-programming-guide.html
+# MAGIC
+# MAGIC [^5]: https://docs.databricks.com/aws/en/dlt/streaming-tables
+# MAGIC
+# MAGIC [^6]: https://delta-docs-incubator.netlify.app/delta-streaming/
+# MAGIC
+# MAGIC [^7]: https://www.macrometa.com/event-stream-processing/spark-structured-streaming
+# MAGIC
+# MAGIC [^8]: https://stackoverflow.com/questions/76599437/in-pyspark-what-is-the-difference-between-spark-read-and-spark-readstream
+# MAGIC
+# MAGIC
+
+# COMMAND ----------
+
 (spark.readStream
       .table("books")
       .createOrReplaceTempView("books_streaming_tmp_vw")
@@ -55,6 +118,11 @@ display(
 # MAGIC %md
 # MAGIC
 # MAGIC ## Unsupported Operations
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC Order by is unsupported without watermarking in streaming opertions
 
 # COMMAND ----------
 
@@ -235,7 +303,20 @@ display(
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ### ⚙️ Step-by-Step Explanation
+# MAGIC ### availableNow=True
+# MAGIC <br><br>
+# MAGIC
+# MAGIC ```
+# MAGIC (spark.table("author_counts_tmp_vw")                               
+# MAGIC       .writeStream           
+# MAGIC       .trigger(availableNow=True)
+# MAGIC       .outputMode("complete")
+# MAGIC       .option("checkpointLocation", "dbfs:/mnt/demo/author_counts_checkpoint")
+# MAGIC       .table("author_counts")
+# MAGIC       .awaitTermination()
+# MAGIC )
+# MAGIC ```
+# MAGIC #### ⚙️ Step-by-Step Explanation
 # MAGIC 1. spark.table("author_counts_tmp_vw")
 # MAGIC
 # MAGIC Reads the temporary view author_counts_tmp_vw as a streaming DataFrame.
