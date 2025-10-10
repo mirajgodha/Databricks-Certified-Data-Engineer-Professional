@@ -7,6 +7,25 @@
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC Use the below cell contents to delete if you have ran the code previously 
+
+# COMMAND ----------
+
+dbutils.fs.rm(f"{dataset_bookstore}/kafka-raw/02.json")
+dbutils.fs.rm(f"{dataset_bookstore}/kafka-raw/03.json")
+dbutils.fs.rm(f"{dataset_bookstore}/kafka-raw/04.json")
+dbutils.fs.rm(f"{dataset_bookstore}/kafka-raw/05.json")
+dbutils.fs.rm(f"{dataset_bookstore}/kafka-raw/06.json")
+dbutils.fs.rm(f"dbfs:/mnt/demo_pro/checkpoints/bronze", True)
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC drop table bronze;
+
+# COMMAND ----------
+
 # MAGIC %run ../Includes/Copy-Datasets
 
 # COMMAND ----------
@@ -46,6 +65,24 @@ def process_bronze():
 # COMMAND ----------
 
 process_bronze()
+
+# COMMAND ----------
+
+# List all active Structured Streaming queries
+active_streams = spark.streams.active
+
+if len(active_streams) == 0:
+    print("✅ No active streaming queries found.")
+else:
+    print(f"⚙️ {len(active_streams)} active streaming queries detected:\n")
+
+    for stream in active_streams:
+        print(f"🔹 Name: {stream.name}")
+        print(f"   ID: {stream.id}")
+        print(f"   Is Active: {stream.isActive}")
+        print(f"   Status: {stream.status['message']}")
+        print(f"   Last Progress: {stream.lastProgress['batchId'] if stream.lastProgress else 'N/A'}")
+        print("-" * 60)
 
 # COMMAND ----------
 

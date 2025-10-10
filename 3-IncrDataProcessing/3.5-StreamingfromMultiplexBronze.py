@@ -11,6 +11,10 @@
 
 # COMMAND ----------
 
+dbutils.fs.rm("dbfs:/mnt/demo_pro/checkpoints/orders_silver", True)
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC ### 💡 CAST() Function
 # MAGIC

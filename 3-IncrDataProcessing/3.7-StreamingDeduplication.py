@@ -25,6 +25,11 @@
 # COMMAND ----------
 
 # MAGIC %md
+# MAGIC ### Batch - removing duplicates
+
+# COMMAND ----------
+
+# MAGIC %md
 # MAGIC
 # MAGIC ### Parsing and Counting Unique Orders from JSON in a Table
 # MAGIC
@@ -118,6 +123,11 @@ batch_total = (spark.read
                 )
 
 print(batch_total)
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ### Streaming - Removing Duplicates
 
 # COMMAND ----------
 
