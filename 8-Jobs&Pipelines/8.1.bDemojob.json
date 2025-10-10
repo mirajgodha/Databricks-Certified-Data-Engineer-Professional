@@ -1,0 +1,56 @@
+{
+  "name": "Demo-ETL-Pipeline",
+  "email_notifications": {},
+  "webhook_notifications": {},
+  "timeout_seconds": 0,
+  "max_concurrent_runs": 1,
+  "queue": {
+    "enabled": true
+  },
+  "performance_target": "PERFORMANCE_OPTIMIZED",
+
+  "tasks": [
+    {
+      "task_key": "data_ingestion",
+      "notebook_task": {
+        "notebook_path": "/Shared/ETL_Pipeline_Demo/01_data_ingestion"
+      },
+      "existing_cluster_id": "1006-073232-3pxvb20f",
+      "timeout_seconds": 3600
+    },
+    {
+      "task_key": "data_cleansing",
+      "notebook_task": {
+        "notebook_path": "/Shared/ETL_Pipeline_Demo/02_data_cleansing"
+      },
+      "depends_on": [
+        {"task_key": "data_ingestion"}
+      ],
+      "existing_cluster_id": "1006-073232-3pxvb20f"
+    },
+    {
+      "task_key": "data_transformation",
+      "notebook_task": {
+        "notebook_path": "/Shared/ETL_Pipeline_Demo/03_data_transformation"
+      },
+      "depends_on": [
+        {"task_key": "data_cleansing"}
+      ],
+      "existing_cluster_id": "1006-073232-3pxvb20f"
+    },
+    {
+      "task_key": "data_monitoring",
+      "notebook_task": {
+        "notebook_path": "/Shared/ETL_Pipeline_Demo/04_data_monitoring"
+      },
+      "depends_on": [
+        {"task_key": "data_transformation"}
+      ],
+      "existing_cluster_id": "1006-073232-3pxvb20f"
+    }
+  ],
+
+  "run_as": {
+    "user_name": "miraj@quantumroot.in"
+  }
+}
