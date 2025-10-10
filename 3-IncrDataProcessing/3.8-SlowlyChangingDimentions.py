@@ -169,7 +169,17 @@
 
 # COMMAND ----------
 
+dbutils.fs.rm("dbfs:/mnt/demo_pro/checkpoints/books_silver", True)
+
+# COMMAND ----------
+
 # MAGIC %run ../Includes/Copy-Datasets
+
+# COMMAND ----------
+
+# MAGIC %sql 
+# MAGIC drop table current_books;
+# MAGIC drop table books_silver;
 
 # COMMAND ----------
 
