@@ -1,0 +1,36 @@
+flowchart TD
+
+%% === Incoming Stream ===
+A["Bronze Stream Table - topic 'books'"] -->|"ReadStream and parse JSON"| B["Temp View: updates"]
+
+%% === Comparison ===
+B -->|"Compare with existing records in books_silver"| C{"Compare book_id and price"}
+
+%% === Decision Points ===
+C -->|"New book_id - does not exist"| D["Insert new record - current = true, effective_date = updated, end_date = null"]
+C -->|"Same price as current record"| E["No change - ignore"]
+C -->|"Price changed"| F["Expire old record - set current = false and end_date = updated"]
+
+%% === Insert New Version ===
+F --> G["Insert new version - current = true, effective_date = updated, end_date = null"]
+
+%% === Merge Target ===
+D & G --> H["Delta Table: books_silver"]
+
+%% === Table Storage ===
+H --> I["Historical and current records stored with Type 2 versioning"]
+
+%% === Output ===
+I --> J["Query results - order by book_id and effective_date"]
+
+%% === Style Definitions ===
+style A fill:#ffefcc,stroke:#f9a602,stroke-width:2px
+style B fill:#fff5cc,stroke:#f1b93b
+style C fill:#e2e3e5,stroke:#6c757d,stroke-width:1px
+style D fill:#d4edda,stroke:#28a745
+style E fill:#f8d7da,stroke:#dc3545
+style F fill:#f8e8b3,stroke:#ffc107
+style G fill:#d1ecf1,stroke:#17a2b8
+style H fill:#cce5ff,stroke:#007bff
+style I fill:#fefefe,stroke:#adb5bd
+style J fill:#e2e3e5,stroke:#6c757d
